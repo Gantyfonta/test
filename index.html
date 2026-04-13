@@ -1,0 +1,23 @@
+<input type="text" id="ytUrl" placeholder="Paste YouTube Link">
+<button onclick="sendVideo()">Send to Friend</button>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = { /* YOUR CONFIG HERE */ };
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.sendVideo = () => {
+    const url = document.getElementById('ytUrl').value;
+    const videoId = new URL(url).searchParams.get("v");
+    if (videoId) {
+      set(ref(db, 'shared/currentVideo'), {
+        id: videoId,
+        timestamp: Date.now()
+      });
+      alert("Sent!");
+    }
+  };
+</script>
