@@ -1,23 +1,53 @@
-<input type="text" id="ytUrl" placeholder="Paste YouTube Link">
-<button onclick="sendVideo()">Send to Friend</button>
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Send Video to Friend</h2>
+  <input type="text" id="ytUrl" placeholder="Paste YouTube Link">
+  <button id="sendBtn">Send to Friend</button>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  const firebaseConfig = { /* YOUR CONFIG HERE */ };
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyBONoAkyUG_U1WQZmDk6DCmzUrlFbubiFc",
+      authDomain: "send-28691.firebaseapp.com",
+      projectId: "send-28691",
+      // CRITICAL FIX: The explicit database URL
+      databaseURL: "https://send-28691-default-rtdb.firebaseio.com", 
+      storageBucket: "send-28691.firebasestorage.app",
+      messagingSenderId: "1025633246051",
+      appId: "1:1025633246051:web:183579b0ea8d86cef99156"
+    };
 
-  window.sendVideo = () => {
-    const url = document.getElementById('ytUrl').value;
-    const videoId = new URL(url).searchParams.get("v");
-    if (videoId) {
-      set(ref(db, 'shared/currentVideo'), {
-        id: videoId,
-        timestamp: Date.now()
-      });
-      alert("Sent!");
-    }
-  };
-</script>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Grab the button and add the click logic here
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const urlInput = document.getElementById('ytUrl').value;
+      
+      try {
+        const url = new URL(urlInput);
+        const videoId = url.searchParams.get("v");
+
+        if (videoId) {
+          set(ref(db, 'shared/currentVideo'), {
+            id: videoId,
+            timestamp: Date.now()
+          }).then(() => {
+            alert("Video sent successfully!");
+          }).catch((error) => {
+            alert("Firebase Error: " + error.message);
+          });
+        } else {
+          alert("Please paste a valid YouTube watch link.");
+        }
+      } catch (e) {
+        alert("Invalid URL format.");
+      }
+    });
+  </script>
+</body>
+</html>
